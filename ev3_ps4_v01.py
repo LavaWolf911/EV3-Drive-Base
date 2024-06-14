@@ -21,7 +21,19 @@ def scale_stick(value):
 
 def dc_clamp(value):
     return clamp(value,-500,500)
-
+start = """
+*********************************************
+*                                           *
+*           ##########     #############    *
+*         ####     ####   ####     ####     *
+*        ####            ####     ####      *
+*       ####            ####     ####       *
+*      ####    ######  ####     ####        *
+*     ####     ####   ####     ####         *
+*     ###########    #############          *
+*                                           *                  
+*********************************************                            
+"""
 ## Initializing ##
 print("Finding ps4 controller...")
 devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
