@@ -12,6 +12,8 @@ print("importing libraries ...")
 import threading
 print("importing libraries ...")
 import time
+print("importing libraries ...")
+from ev3dev2.button import Button
 
 ## PS4 Button Maps (For event.code)
 
@@ -73,14 +75,15 @@ start = """
 *********************************************                            
 """
 ## Initializing ##
-print("Finding xbox controller...")
+print("Finding controller...")
 devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
-print("Finding xbox controller..")
-xboxdev = devices[0].fn
-print("Finding xbox controller.")
-gamepad = evdev.InputDevice(ps4dev)
-print("Finding xbox controller...")
-
+print("Finding controller..")
+Ctrldev = devices[0].fn
+print("Finding controller.")
+gamepad = evdev.InputDevice(Ctrldev)
+print("Finding controller...")
+print("Preparing constants...")
+btn = Button()
 forward_speed = 0
 forward_speed1 = 0
 grab_speed1 = 0
@@ -95,7 +98,8 @@ class MotorThread(threading.Thread):
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         self.claw_motor = ev3.MediumMotor(ev3.OUTPUT_A | ev3.OUTPUT_D)
         threading.Thread.__init__(self)
- 
+        print("Please press the UP ARROW if you are using a PS4 Controller")
+        print("Please press the DOWN ARROW if you are using a XBOX Controller")
     def run(self):
         print("Your Brick is Working!")
         print(start)
