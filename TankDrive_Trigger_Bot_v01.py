@@ -55,24 +55,37 @@ def scale_stick(value):
 
 def dc_clamp(value):
     return clamp(value,-500,500)
-# def thumbs_up():
-#     return print("______________________________________________"),print("______________________________________________"),print("________________________________████__________"),print("________________________________████__________"),print("________________________________██__██________"),print("______________________________▓▓____██________"),print("______________________________▓▓____██________"),print("____________________________██____██__________"),print("____________________________██____██__________"),print("__________________________██______██__________"),print("__________________________██____██____________"),print("__██████████____________██______██____________"),print("██░░▒▒▒▒░░▒▒██____██████________██████████████"),print("██░░░░░░░░▒▒██__██__________________________██"),print("██▒▒▒▒▒▒░░▒▒██__██__________________________██"),print("██▓▓▓▓▓▓▓▓▓▓██__██________________██████████__"),print("██▓▓▓▓▒▒▓▓▓▓██__██________________________██__"),print("██▓▓▓▓▒▒▒▒▒▒██__▓▓________________░░░░____██__"),print("██▓▓▓▓▓▓▓▓▓▓██__██________________████████____"),print("██▓▓▓▓▓▓▓▓▓▓██__██______________________██____"),print("██▓▓▓▓▓▓▓▓▓▓██__██______________________██____"),print("██▓▓▓▓▓▓▓▓▓▓██__██________________██████______"),print("██▓▓▓▓▓▓__▓▓██__██____________________██______"),print("██▓▓▓▓▓▓▓▓▓▓██____████████████████████________"),print("__██████████__________________________________"),print("______________________________________________")
 ## Initializing ##
-print("Finding ps4 controller...")
 devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
 ps4dev = devices[0].fn
-
 gamepad = evdev.InputDevice(ps4dev)
 
 forward_speed = 0
 forward_speed1 = 0
 grab_speed1 = 0
 grab_speed = 0
+start = """
+
+
+
+***********************************************
+*                                             *
+*           %%%%%%%%%%       %%%%%%%%%%%%%    *
+*         %%%%     %%%%     %%%%     %%%%     *
+*        %%%%              %%%%     %%%%      *
+*       %%%%              %%%%     %%%%       *
+*      %%%%    %%%%%%    %%%%     %%%%        *
+*     %%%%     %%%%     %%%%     %%%%         *
+*     %%%%%%%%%%%      %%%%%%%%%%%%%          *
+*                                             *                  
+***********************************************                            
+"""
 running = True
 
 ## The Motors ##
 class MotorThread(threading.Thread):
     def __init__(self):
+        print("Initating")
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
         self.claw_motor = ev3.MediumMotor(ev3.OUTPUT_A)
@@ -80,18 +93,7 @@ class MotorThread(threading.Thread):
 
     def run(self):
         print("Your Brick is Working!")
-        print("                __                ")
-        print("               /  \               ")
-        print("              |   |               ")
-        print("              |   |               ")
-        print("             /    \               ")
-        print("      ____  /      \_____         ")
-        print("     |0000| |____________\        ")
-        print("     |0000| |____________|        ")
-        print("     |0000| |____________|        ")
-        print("     |0000| |____________/        ")
-        print("                                  ")
-        # thumbs_up()
+        print(start)
         while running:
             self.right_motor.run_forever(speed_sp=dc_clamp(forward_speed))
             self.left_motor.run_forever(speed_sp=dc_clamp(forward_speed1))
@@ -110,11 +112,11 @@ for event in gamepad.read_loop():   #this loops infinitely
     # map the controller to both sticks (drive motors)
     if event.type == 3:             #left stick is moved
         if event.code == 4:         #Y axis on right stick
-            forward_speed = scale_stick(event.value)
+            forward_speed = -scale_stick(event.value)
         if forward_speed < 100 and forward_speed > -100:
             forward_speed = 0
         if event.code == 1:         #Y axis on left stick
-            forward_speed1 = scale_stick(event.value)
+            forward_speed1 = -scale_stick(event.value)
         if forward_speed1 < 100 and forward_speed1 > -100:
             forward_speed1 = 0
     # map the controller both triggers to the grab claw/MediumMotor
