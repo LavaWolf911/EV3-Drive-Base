@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 
 __author__ = 'Connor S'
-## also thanks for help to https://gist.github.com/Quantum357 as well as Sebastiaans adaptations after a Artur Poznanski program.##
+## also thanks for help to https://gist.github.com/Quantum357 aswell as Sebastiaans adaptations after a Artur Poznanski program.##
 
 ## Import libraries ##
+print("importing libraries ...")
 import evdev
+print("importing libraries ...")
 import ev3dev.auto as ev3
+print("importing libraries ...")
 import threading
+print("importing libraries ...")
 import time
+print("importing libraries ...")
+from ev3dev2.button import Button
 
 ## PS4 Button Maps (For event.code)
 
@@ -68,35 +74,39 @@ start = """
 *                                           *                  
 *********************************************                            
 """
-# Initializing ##
-print("Finding ps4 controller...")
+## Initializing ##
+print("Finding controller...")
 devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
-ps4dev = devices[0].fn
-
-gamepad = evdev.InputDevice(ps4dev)
-
+print("Finding controller..")
+Ctrldev = devices[0].fn
+print("Finding controller.")
+gamepad = evdev.InputDevice(Ctrldev)
+print("Finding controller...")
+print("Preparing constants...")
+btn = Button()
 forward_speed = 0
 forward_speed1 = 0
-side_speed = 0
+grab_speed1 = 0
 grab_speed = 0
 running = True
 
 ## The Motors ##
 class MotorThread(threading.Thread):
     def __init__(self):
+        print("Initating")
         self.right_motor = ev3.LargeMotor(ev3.OUTPUT_C)
         self.left_motor = ev3.LargeMotor(ev3.OUTPUT_B)
-        self.claw_motor = ev3.MediumMotor(ev3.OUTPUT_A)
+        self.claw_motor = ev3.MediumMotor(ev3.OUTPUT_A | ev3.OUTPUT_D)
         threading.Thread.__init__(self)
-
+        print("Please press the UP ARROW if you are using a PS4 Controller")
+        print("Please press the DOWN ARROW if you are using a XBOX Controller")
     def run(self):
         print("Your Brick is Working!")
-        # thumbs_up()
-        plt.imshow(mpimg.imread('download.png'))
+        print(start)
         while running:
             self.right_motor.run_forever(speed_sp=dc_clamp(forward_speed))
-            self.left_motor.run_forever(speed_sp=dc_clamp(-forward_speed1))
-            self.claw_motor.run_forever(speed_sp=dc_clamp(grab_speed))
+            self.left_motor.run_forever(speed_sp=dc_clamp(forward_speed1))
+            self.claw_motor.run_forever(speed_sp=dc_clamp(grab_speed+grab_speed1))
         self.right_motor.stop()
         self.left_motor.stop()
         self.claw_motor.stop()
@@ -112,12 +122,20 @@ for event in gamepad.read_loop():   #this loops infinitely
     if event.type == 3:             #left stick is moved
         if event.code == 4:         #Y axis on right stick
             forward_speed = scale_stick(event.value)
+        if forward_speed < 100 and forward_speed > -100:
+            forward_speed = 0
         if event.code == 1:         #Y axis on left stick
-            forward_speed1_speed = scale_stick(event.value)
+            forward_speed1 = scale_stick(event.value)
+        if forward_speed1 < 100 and forward_speed1 > -100:
+            forward_speed1 = 0
     # map the controller both triggers to the grab claw/MediumMotor
     if event.type == 3:
         if event.code == 2:
-            grab_speed = -scale_stick(event.value)
-        if event.code == 5:
             grab_speed = scale_stick(event.value)
-    # if you press button O then the program will exit
+        if grab_speed < 100 and -grab_speed > -100:
+            grab_speed = 0
+        if event.code == 5:
+            grab_speed1 = -scale_stick(event.value)
+        if grab_speed < 100 and grab_speed1 > -100:
+            grab_speed1 = 0
+    # if you press button O then the program will cancel
