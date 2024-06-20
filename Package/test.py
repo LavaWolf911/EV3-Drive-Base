@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import time
+from ev3dev2.sound import Sound
+spkr = Sound()
 print("Starting program...")
 time.sleep(1.5)
 print("Initializing...")
@@ -12,4 +14,4 @@ print("Connecting to controller")
 time.sleep(.75)
 print("Connected!")
 time.sleep(2)
-exec(open('test copy.py').read())
+spkr.play_file('Package/bark.wav')
