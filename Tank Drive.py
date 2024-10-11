@@ -58,8 +58,6 @@ start = """
     clockwise and counter-clockwise                           
 """
 running = True
-exec(open("Package/test.py").read(), globals())
-
 
 ## The Motors ##
 class MotorThread(threading.Thread):
